@@ -10,6 +10,8 @@ library(dplyr)
 library(lubridate)
 library(surveillance)
 library(shiny)
+library(ciTools)
+library(ggplot2)
 source('./R/glrpoisApp.R')
 source('./R/surv.ds.convert.R')
 
@@ -52,19 +54,25 @@ Create the harmonic variables you need for a harmonic regression. Remember, this
 
 ```
 
-Fit your Poisson regression model
+Fit your Poisson or negative binomial regression model
 
 ```{r}
+#Poisson (replace YY and XX with relevant variables)
+mod1 <- glm( YY ~ XXX, family=poisson, data=a2)
+
+#Or negative binomial (replace YY and XX with relevant variables)
+mod2 <- glm.nb(YY ~ XX, data=a2)
 
 ```
 
 Plot your output observed and fitted values
 
 ```{r}
+preds_mod1 <-  add_pi(a2, fit=mod2, yhatName = "pred", alpha=0.05 )
 
 ```
 
-Next fit a robust harmonic regression
+fit a robust harmonic regression
 
 ```{r}
 
