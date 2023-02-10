@@ -39,13 +39,13 @@ a1 <- readRDS('./Data/u5_diarrhea_brooklyn.rds')
 Our goal is to establish a prospective abberation detective algorithm for diarrhea in kids. Let's first focus on the period before the pandemic, which is subset and saved in data frame a2 below:
 
 ```{r}
-a2 <- a1[a1$date<'2020-03-01',]
+a2 <- a1 %>%
+  filter(date<'2020-03-01') %>% #restrict to pre-pandemic period
+  arrange(date) %>%  #sort the data by date
+  mutate(index = row_number(), # create an index variable 1:number of rows in a2
+         day_of_week = as.factor(weekdays(date))) 
 
-a2 <- a2[order(a2$date),] #ensure it is sorted by date
 
-a2$index <- 1: nrow(a2) # create an index variable 1:number of rows in a2
-
-a2$day_of_week <- as.factor(weekdays(a2$date))
 ```
 
 Create the harmonic variables you need for a harmonic regression. Remember, this is daily data
@@ -93,16 +93,12 @@ Plot the predictions
 ## Now develop a seasonal CUSUM for the post-pandemic period, for weekly data
 
 ```{r}
-a3 <- readRDS( './Data/weekly_u5_diarrhea_brooklyn_pandemic.rds')
+a3 <- readRDS( './Data/weekly_u5_diarrhea_brooklyn_pandemic.rds') %>%
+  arrange(week.date) %>%
+    mutate(cases_train = if_else(week.date>='2021-10-01', NA_integer_, cases), #set to missing for Q4 2021
+           index= row_number() #index variable for time 1:t
+           )  
 
-
-#Create a version of the time series that is missing for 4th quarter of 2021
-a3$cases_train <- a3$cases
-a3$cases_train[a3$week.date>='2021-10-01'] <- NA
-
-a3 <- a3[order(a3$week.date),]
-
-a3$index <- 1:nrow(a3)
 ```
 
 Fit a Poisson regression to the weekly data through the end of Q3 2021. (You can use variale 'cases_train' for model fitting) Remember this is weekly data now.
