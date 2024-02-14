@@ -114,4 +114,9 @@ glrpois_App(a3, datevar='week.date', casevar='cases', n.weeks.train=79)
 ```
 
 
+## Reporting delays
 
+```{r}
+ds1 <-   readRDS('Data/reported_cases.rds')
+
+```
